@@ -1,0 +1,17 @@
+name: request_logging
+version: 0.1.0
+display_name: Request Logging
+summary: Logs method, path, status and duration for every request.
+kind: middleware
+stage: post
+params:
+  logger_name:
+    type: string
+    default: morphkit.requests
+    description: Logger used for one line per request.
+adapt:
+  target: fastapi_app
+  marker: "# morphkit:segment:request_logging"
+tests:
+  - test_segment_templates.py
+

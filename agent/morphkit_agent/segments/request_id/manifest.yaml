@@ -1,0 +1,17 @@
+name: request_id
+version: 0.1.0
+display_name: Request ID
+summary: Adds a unique X-Request-ID header to every response.
+kind: middleware
+stage: pre
+params:
+  header_name:
+    type: string
+    default: X-Request-ID
+    description: Response header that carries the generated ID.
+adapt:
+  target: fastapi_app
+  marker: "# morphkit:segment:request_id"
+tests:
+  - test_segment_templates.py
+

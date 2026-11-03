@@ -1,0 +1,18 @@
+name: rate_limit
+version: 0.1.0
+display_name: Rate Limit
+summary: Limits each client to a fixed number of requests per minute.
+kind: middleware
+stage: pre
+params:
+  requests_per_minute:
+    type: integer
+    default: 60
+    min: 1
+    description: Requests allowed per client IP in a 60 second window.
+adapt:
+  target: fastapi_app
+  marker: "# morphkit:segment:rate_limit"
+tests:
+  - test_segment_templates.py
+

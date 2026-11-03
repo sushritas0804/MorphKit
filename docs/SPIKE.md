@@ -21,7 +21,11 @@ on Windows, macOS, and Linux.
 - [x] Template tests prove segment code works at runtime, not just that it parses
 - [x] Target picker when a project has several app objects
 - [x] 5 benchmark fixtures, 15/15 applies, fixture tests still pass
-- [x] Agent tests: 17 passing; ruff and mypy clean
+- [x] Agent tests: 20 passing; ruff and mypy clean
+- [x] `morphkit demo` copies a fixture to `.demo/` and opens it, so apply never
+      touches fixtures or the user's repo
+- [x] Auto-preview: click or drop a segment and the diff appears immediately
+- [x] Verification panel says "not run (no test files found)" when there are none
 
 ## Next
 
@@ -36,7 +40,12 @@ on Windows, macOS, and Linux.
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".\agent[dev]"
 cd ui; npm install; npm run build; cd ..
-.\.venv\Scripts\morphkit.exe open .\benchmarks\projects\basic
+
+# safe demo: copies benchmarks/projects/basic to .demo/basic
+.\.venv\Scripts\morphkit.exe demo
+
+# or point at a real project
+.\.venv\Scripts\morphkit.exe open <path>
 ```
 
 Checks:

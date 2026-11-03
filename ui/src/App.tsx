@@ -134,20 +134,38 @@ export default function App() {
     };
   }, [selected, params, target]);
 
+  const previewWith = useCallback(
+    async (segment: SegmentManifest, values: Record<string, unknown>) => {
+      const current = scan?.apps[targetIndex] ?? scan?.apps[0];
+      if (!current) {
+        setError("No FastAPI app object found in this project.");
+        return;
+      }
+      setBusy(true);
+      setError(null);
+      setApplied(null);
+      try {
+        setPreview(
+          await api.preview({
+            segment: segment.name,
+            params: values,
+            app_file: current.file,
+            app_var: current.app_var,
+          }),
+        );
+      } catch (err) {
+        setPreview(null);
+        setError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [scan, targetIndex],
+  );
+
   const requestPreview = useCallback(async () => {
-    if (!payload) return;
-    setBusy(true);
-    setError(null);
-    setApplied(null);
-    try {
-      setPreview(await api.preview(payload));
-    } catch (err) {
-      setPreview(null);
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusy(false);
-    }
-  }, [payload]);
+    if (selected) await previewWith(selected, params);
+  }, [selected, params, previewWith]);
 
   const requestApply = useCallback(async () => {
     if (!payload) return;
@@ -174,6 +192,7 @@ export default function App() {
       setSelected(match);
       setPreview(null);
       setApplied(null);
+      void previewWith(match, defaultsFor(match));
     }
   };
 
@@ -222,6 +241,7 @@ export default function App() {
                   setSelected(segment);
                   setPreview(null);
                   setApplied(null);
+                  void previewWith(segment, defaultsFor(segment));
                 }}
                 className={`card ${selected?.name === segment.name ? "active" : ""}`}
               >
@@ -353,7 +373,7 @@ export default function App() {
                   ? applied.verify.tests.passed
                     ? "passed"
                     : "failed"
-                  : applied.verify.tests.output_tail}
+                  : "not run (no test files found)"}
               </p>
               {applied.verify.tests.ran ? (
                 <pre className="output">{applied.verify.tests.output_tail}</pre>
